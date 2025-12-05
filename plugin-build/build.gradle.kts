@@ -5,11 +5,12 @@ plugins {
   alias(libs.plugins.pluginPublish) apply false
   alias(libs.plugins.detekt)
   alias(libs.plugins.ktlint)
+  alias(libs.plugins.manifest)
 }
 
 allprojects {
   group = "com.daiyuang"
-  version = "0.0.3"
+  version = "0.0.4"
 
   apply {
     plugin(
@@ -22,6 +23,7 @@ allprojects {
         .get()
         .pluginId,
     )
+    plugin(rootProject.libs.plugins.manifest.get().pluginId)
   }
 
   ktlint {
