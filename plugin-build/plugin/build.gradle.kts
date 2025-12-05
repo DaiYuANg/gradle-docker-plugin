@@ -40,7 +40,7 @@ gradlePlugin {
       version = pluginVersion
       description = pluginDescription
       displayName = pluginDisplayName
-      tags.set(listOf("docker", "gradle"))
+      tags.set(listOf("docker"))
     }
   }
 }
