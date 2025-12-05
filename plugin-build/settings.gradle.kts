@@ -31,6 +31,6 @@ develocity {
     }
 }
 
-rootProject.name = ("com.ncorti.kotlin.gradle.template")
+rootProject.name = ("com.daiyuang.kotlin.gradle.docker.plugin")
 
 include(":plugin")

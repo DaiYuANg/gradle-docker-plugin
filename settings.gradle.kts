@@ -25,7 +25,7 @@ develocity {
     }
 }
 
-rootProject.name = "kotlin-gradle-plugin-template"
+rootProject.name = "gradle-gradle-plugin"
 
 include(":example")
 includeBuild("plugin-build")

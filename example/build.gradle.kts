@@ -1,8 +1,5 @@
 plugins {
     java
-    id("com.ncorti.kotlin.gradle.template.plugin")
+    id("com.daiyuang.kotlin.gradle.docker.plugin")
 }
 
-templateExampleConfig {
-    message.set("Just trying this gradle plugin...")
-}
