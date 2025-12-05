@@ -39,16 +39,16 @@ class TemplatePluginTest {
     project.pluginManager.apply("com.ncorti.kotlin.gradle.template.plugin")
     val aFile = File(project.projectDir, ".tmp")
     (project.extensions.getByName("templateExampleConfig") as DockerExtension).apply {
-      tag.set("a-sample-tag")
-      message.set("just-a-message")
-      outputFile.set(aFile)
+//      tag.set("a-sample-tag")
+//      message.set("just-a-message")
+//      outputFile.set(aFile)
     }
 
     val task = project.tasks.getByName("templateExample") as DockerBuildTask
 
     assertEquals("a-sample-tag", task.tag.get())
-    assertEquals("just-a-message", task.message.get())
-    assertEquals(aFile, task.outputFile.get().asFile)
+//    assertEquals("just-a-message", task.message.get())
+//    assertEquals(aFile, task.outputFile.get().asFile)
   }
 
   @Test

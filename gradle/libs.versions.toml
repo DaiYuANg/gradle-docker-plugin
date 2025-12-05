@@ -23,3 +23,4 @@ junit = "junit:junit:4.13.2"
 docker-java-core = { group = "com.github.docker-java", name = "docker-java-core", version.ref = "docker-client" }
 docker-java-transport-httpclient5 = { group = "com.github.docker-java", name = "docker-java-transport-httpclient5", version.ref = "docker-client" }
 apache-common-lang3 = { group = "org.apache.commons", name = "commons-lang3", version = "3.20.0" }
+jackson-core = { group = "tools.jackson.core", name = "jackson-core", version = "3.0.3" }

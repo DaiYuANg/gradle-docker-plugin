@@ -9,6 +9,7 @@ plugins {
   alias(libs.plugins.dotenv)
   alias(libs.plugins.spotless)
   alias(libs.plugins.plantuml)
+  alias(libs.plugins.manifest)
 }
 
 subprojects {
@@ -22,6 +23,9 @@ subprojects {
       rootProject.libs.plugins.ktlint
         .get()
         .pluginId,
+    )
+    plugin(
+      rootProject.libs.plugins.manifest.get().pluginId,
     )
   }
 

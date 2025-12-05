@@ -12,7 +12,7 @@ dependencies {
   implementation(libs.docker.java.core)
   implementation(libs.docker.java.transport.httpclient5)
   implementation(libs.apache.common.lang3)
-  implementation("tools.jackson.core:jackson-core:3.0.3")
+  implementation(libs.jackson.core)
   testImplementation(libs.junit)
 }
 
