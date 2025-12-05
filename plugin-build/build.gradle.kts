@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
   group = "com.daiyuang"
-  version = "0.0.2"
+  version = "0.0.3"
 
   apply {
     plugin(

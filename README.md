@@ -15,6 +15,8 @@ A Gradle plugin written in 100% Kotlin to simplify Docker image build, run, and 
 
 - Inspect images directly after building.
 
+- Build Dockerfiles using Kotlin DSL or remote templates with Freemarker.
+
 ## Plugin ID
 
 ```kotlin
@@ -38,6 +40,30 @@ plugins {
   - Multi-stage target builds
 
   - Optional image inspection after build
+
+  - Kotlin DSL Dockerfile generator:
+
+```kotlin
+tasks.dockerBuild {
+  dockerfileDsl.set {
+    dockerfile {
+      from("bellsoft/liberica-openjre-debian:25.0.1")
+      run("apt update && apt install -y fontconfig tzdata")
+      copy("build/libs/my-app.jar", "/app/application.jar")
+      entrypoint("java -jar /app/application.jar")
+    }
+  }
+}
+```
+
+- Freemarker remote template support:
+
+```kotlin
+tasks.dockerBuild {
+  dockerfileTemplate.set("https://raw.githubusercontent.com/myorg/templates/main/Dockerfile.ftl")
+  templateVars.set(mapOf("VERSION" to "1.0.0", "BASE_IMAGE" to "bellsoft/liberica-openjre-debian:25.0.1"))
+}
+```
 
 - Docker Push: Push images to a registry with dockerPush.
 
