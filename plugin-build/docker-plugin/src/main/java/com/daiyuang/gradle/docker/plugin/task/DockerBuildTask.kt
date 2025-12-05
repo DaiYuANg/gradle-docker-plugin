@@ -1,10 +1,6 @@
-package com.daiyuang.kotlin.gradle.docker.plugin.task
+package com.daiyuang.gradle.docker.plugin.task
 
-import com.daiyuang.kotlin.gradle.docker.plugin.dsl.DockerfileBuilder
-import com.daiyuang.kotlin.gradle.docker.plugin.dsl.dockerfile
-import com.daiyuang.kotlin.gradle.docker.plugin.func.toPrettyJson
-import com.daiyuang.kotlin.gradle.docker.plugin.service.DockerService
-import com.daiyuang.kotlin.gradle.docker.plugin.service.DockerService.Companion.SERVICE_NAME
+import com.daiyuang.gradle.docker.plugin.func.toPrettyJson
 import com.github.dockerjava.api.model.AuthConfigurations
 import freemarker.template.Configuration
 import freemarker.template.Template
@@ -49,8 +45,8 @@ abstract class DockerBuildTask : DefaultTask() {
     templateVars.convention(mapOf())
   }
 
-  @get:ServiceReference(SERVICE_NAME)
-  abstract val dockerService: Property<DockerService>
+  @get:ServiceReference(com.daiyuang.gradle.docker.plugin.service.DockerService.SERVICE_NAME)
+  abstract val dockerService: Property<com.daiyuang.gradle.docker.plugin.service.DockerService>
 
   // -------------------------
   // Build context & Dockerfile
@@ -145,7 +141,7 @@ abstract class DockerBuildTask : DefaultTask() {
   // -------------------------
   @get:Input
   @get:Optional
-  abstract val dockerfileDsl: Property<DockerfileBuilder.() -> Unit>
+  abstract val dockerfileDsl: Property<com.daiyuang.gradle.docker.plugin.dsl.DockerfileBuilder.() -> Unit>
 
   // -------------------------
   // Remote Dockerfile Template
@@ -175,7 +171,9 @@ abstract class DockerBuildTask : DefaultTask() {
     val dockerfilePath: File = when {
       dockerfileDsl.orNull != null -> {
         val tmp = Files.createTempFile("Dockerfile-", ".tmp").toFile()
-        val content = dockerfile { dockerfileDsl.get().invoke(this) }.build()
+        val content = _root_ide_package_.com.daiyuang.gradle.docker.plugin.dsl.dockerfile {
+          dockerfileDsl.get().invoke(this)
+        }.build()
         tmp.writeText(content)
         logger.lifecycle("Generated Dockerfile (DSL):\n$content")
         tmp

@@ -1,17 +1,15 @@
-package com.daiyuang.kotlin.gradle.docker.plugin
+package com.daiyuang.gradle.docker.plugin
 
-import com.daiyuang.kotlin.gradle.docker.plugin.DockerExtension.Companion.EXTENSION_NAME
-import com.daiyuang.kotlin.gradle.docker.plugin.service.DockerService
-import com.daiyuang.kotlin.gradle.docker.plugin.service.DockerService.Companion.SERVICE_NAME
+import com.daiyuang.gradle.docker.plugin.service.DockerService
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class DockerPlugin : Plugin<Project> {
   override fun apply(project: Project) {
-    val ext = project.extensions.create(EXTENSION_NAME, DockerExtension::class.java, project)
+    val ext = project.extensions.create(DockerExtension.EXTENSION_NAME, DockerExtension::class.java, project)
     project.gradle.sharedServices.registerIfAbsent(
-      SERVICE_NAME,
+      DockerService.SERVICE_NAME,
       DockerService::class.java,
       { spec ->
         run {

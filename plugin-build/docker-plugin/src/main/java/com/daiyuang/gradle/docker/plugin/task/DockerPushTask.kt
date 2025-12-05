@@ -1,10 +1,7 @@
-package com.daiyuang.kotlin.gradle.docker.plugin.task
+package com.daiyuang.gradle.docker.plugin.task
 
-import com.daiyuang.kotlin.gradle.docker.plugin.service.DockerService
-import com.daiyuang.kotlin.gradle.docker.plugin.service.DockerService.Companion.SERVICE_NAME
 import com.github.dockerjava.api.async.ResultCallback
 import com.github.dockerjava.api.model.PushResponseItem
-import org.gradle.api.DefaultTask
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
@@ -13,7 +10,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
-abstract class DockerPushTask : DefaultTask() {
+abstract class DockerPushTask : org.gradle.api.DefaultTask() {
 
   companion object {
     const val TASK_NAME = "dockerPush"
@@ -24,8 +21,8 @@ abstract class DockerPushTask : DefaultTask() {
     group = "DOCKER"
   }
 
-  @get:ServiceReference(SERVICE_NAME)
-  abstract val dockerService: Property<DockerService>
+  @get:ServiceReference(com.daiyuang.gradle.docker.plugin.service.DockerService.Companion.SERVICE_NAME)
+  abstract val dockerService: Property<com.daiyuang.gradle.docker.plugin.service.DockerService>
 
   @get:Input
   @get:Optional

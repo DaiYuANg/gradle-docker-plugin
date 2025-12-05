@@ -1,4 +1,4 @@
-package com.daiyuang.kotlin.gradle.docker.plugin.dsl
+package com.daiyuang.gradle.docker.plugin.dsl
 
 @DslMarker
 annotation class DockerfileDsl

@@ -1,4 +1,4 @@
-package com.daiyuang.kotlin.gradle.docker.plugin.model
+package com.daiyuang.gradle.docker.plugin.model
 
 import org.gradle.api.Named
 import org.gradle.api.provider.Property

@@ -1,4 +1,4 @@
-package com.daiyuang.kotlin.gradle.docker.plugin
+package com.daiyuang.gradle.docker.plugin
 
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientConfig

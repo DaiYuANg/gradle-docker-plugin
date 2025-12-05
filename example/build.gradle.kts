@@ -1,6 +1,7 @@
 plugins {
   java
-  id("com.daiyuang.kotlin.gradle.docker.plugin")
+  id("com.daiyuang.gradle.docker.plugin")
+  id("com.daiyuang.gradle.git.plugin")
 }
 
 tasks.dockerBuild {
@@ -10,6 +11,12 @@ tasks.dockerBuild {
   }
 }
 
+println(project.version)
 tasks.dockerRun {
   image = "redis:latest"
+}
+
+git {
+  enableVersion = true
+  snapshotSuffix = "-SNAPSHOT"
 }

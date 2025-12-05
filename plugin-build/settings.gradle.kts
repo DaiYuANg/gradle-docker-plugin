@@ -34,3 +34,4 @@ develocity {
 rootProject.name = ("com.daiyuang.gradle.plugin")
 
 include(":docker-plugin")
+include(":git-plugin")

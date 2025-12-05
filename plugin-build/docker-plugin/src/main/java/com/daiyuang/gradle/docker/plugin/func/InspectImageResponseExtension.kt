@@ -1,4 +1,4 @@
-package com.daiyuang.kotlin.gradle.docker.plugin.func
+package com.daiyuang.gradle.docker.plugin.func
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature

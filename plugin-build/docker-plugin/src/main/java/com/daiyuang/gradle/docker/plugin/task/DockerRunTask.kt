@@ -1,10 +1,7 @@
-package com.daiyuang.kotlin.gradle.docker.plugin.task
+package com.daiyuang.gradle.docker.plugin.task
 
-import com.daiyuang.kotlin.gradle.docker.plugin.service.DockerService
-import com.daiyuang.kotlin.gradle.docker.plugin.service.DockerService.Companion.SERVICE_NAME
 import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.*
-import org.gradle.api.DefaultTask
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
@@ -15,7 +12,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import java.util.*
 
-abstract class DockerRunTask : DefaultTask() {
+abstract class DockerRunTask : org.gradle.api.DefaultTask() {
 
   companion object {
     const val TASK_NAME = "dockerRun"
@@ -37,8 +34,8 @@ abstract class DockerRunTask : DefaultTask() {
     pullIfMissing.convention(true)
   }
 
-  @get:ServiceReference(SERVICE_NAME)
-  abstract val dockerService: Property<DockerService>
+  @get:ServiceReference(_root_ide_package_.com.daiyuang.gradle.docker.plugin.service.DockerService.Companion.SERVICE_NAME)
+  abstract val dockerService: Property<com.daiyuang.gradle.docker.plugin.service.DockerService>
 
   // -------------------------
   // Basic
