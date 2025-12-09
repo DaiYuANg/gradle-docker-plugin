@@ -14,6 +14,7 @@ dependencies {
   implementation(libs.apache.common.lang3)
   implementation(libs.jackson.core)
   implementation(libs.freemarker)
+  implementation(libs.oshi)
   testImplementation(libs.junit)
 }
 

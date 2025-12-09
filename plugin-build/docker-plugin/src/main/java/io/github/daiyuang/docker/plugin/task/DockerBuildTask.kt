@@ -20,6 +20,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
+import oshi.SystemInfo
 import java.io.File
 import java.io.StringReader
 import java.io.StringWriter
@@ -295,9 +296,27 @@ abstract class DockerBuildTask : DefaultTask() {
   }
 
   private fun detectPlatform(): String {
-    return when (SystemUtils.OS_ARCH.lowercase()) {
-      "aarch64", "arm64" -> "linux/arm64"
-      "x86_64", "amd64" -> "linux/amd64"
+    val si = SystemInfo()
+    val cpu = si.hardware.processor
+    val id = cpu.processorIdentifier
+
+    val arch = id.microarchitecture.lowercase()  // OSHI 7 推荐字段
+    val rawArch = System.getProperty("os.arch").lowercase()  // JVM 补充
+
+    return when {
+      // ARM 64-bit
+      arch.contains("aarch64") || arch.contains("armv8") ||
+        rawArch.contains("aarch64") || rawArch.contains("arm64") ->
+        "linux/arm64"
+
+      // x86_64
+      arch.contains("x86") || rawArch.contains("x86_64") || rawArch.contains("amd64") ->
+        "linux/amd64"
+
+      // ARM 32-bit
+      arch.contains("arm") || rawArch.contains("arm") ->
+        "linux/arm/v7"
+
       else -> "linux/amd64"
     }
   }
