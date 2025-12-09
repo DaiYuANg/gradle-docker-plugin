@@ -9,7 +9,7 @@ plugins {
 }
 
 allprojects {
-  group = "com.daiyuang"
+  group = "io.github.daiyuang"
   version = "0.0.4"
 
   apply {
