@@ -63,8 +63,8 @@ tasks.named("check").configure {
 
 tasks.register("setupPluginUploadFromEnvironment") {
   doLast {
-    val key = System.getenv("GRADLE_PUBLISH_KEY")
-    val secret = System.getenv("GRADLE_PUBLISH_SECRET")
+    val key = env.GRADLE_PUBLISH_KEY.orNull()
+    val secret = env.GRADLE_PUBLISH_SECRET.orNull()
 
     if (key == null || secret == null) {
       throw GradleException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")

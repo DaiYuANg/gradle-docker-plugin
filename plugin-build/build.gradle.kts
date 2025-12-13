@@ -6,11 +6,12 @@ plugins {
   alias(libs.plugins.detekt)
   alias(libs.plugins.ktlint)
   alias(libs.plugins.manifest)
+  alias(libs.plugins.dotenv)
 }
 
 allprojects {
   group = "io.github.daiyuang"
-  version = "0.0.7"
+  version = "0.0.8"
 
   apply {
     plugin(
