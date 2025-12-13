@@ -23,7 +23,7 @@ abstract class DockerPushTask : DefaultTask() {
     group = "DOCKER"
   }
 
-  @get:ServiceReference(DockerService.Companion.SERVICE_NAME)
+  @get:ServiceReference(DockerService.SERVICE_NAME)
   abstract val dockerService: Property<DockerService>
 
   @get:Input
@@ -33,33 +33,55 @@ abstract class DockerPushTask : DefaultTask() {
 
   @get:Input
   @get:Optional
-  @get:Option(option = "tags", description = "List of tags to push (if multiple)")
+  @get:Option(option = "tags", description = "List of tags to push")
   abstract val tags: ListProperty<String>
 
   @TaskAction
   fun pushImages() {
-    val client = dockerService.get().client()
+    val docker = dockerService.get()
+    val client = docker.client()
+    val auth = docker.authConfig()
 
-    val imageName = image.orNull ?: throw IllegalArgumentException("image must be provided")
+    val imageName = image.orNull
+      ?: throw IllegalArgumentException("image must be provided")
+
     val tagList = resolveTags(imageName)
+
+    // 强制防呆：registry image 但没有 auth
+    if (imageName.contains("/") && auth == null) {
+      throw IllegalStateException(
+        "Registry image detected but no authConfig provided. Push will fail silently."
+      )
+    }
 
     tagList.forEach { fullTag ->
       logger.lifecycle("Pushing image $fullTag ...")
+
       client.pushImageCmd(fullTag)
+        .apply {
+          auth?.let { withAuthConfig(it) }
+        }
         .exec(object : ResultCallback.Adapter<PushResponseItem>() {
           override fun onNext(item: PushResponseItem?) {
-            item?.progressDetail?.let { pd ->
-              if (pd.total != null && pd.current != null) {
-                logger.lifecycle("  ${item.status}: ${pd.current}/${pd.total}")
-              } else {
-                logger.lifecycle("  ${item.status}")
+            when {
+              item?.errorDetail != null -> {
+                item.errorDetail?.let {
+                  throw RuntimeException(
+                    "Docker push failed: ${it.message}"
+                  )
+                }
               }
-            } ?: run {
-              if (item?.status != null) logger.lifecycle("  ${item.status}")
+
+              item?.progressDetail?.current != null ->
+                logger.lifecycle("  ${item.status}")
+
+              item?.status != null ->
+                logger.lifecycle("  ${item.status}")
             }
           }
         })
         .awaitCompletion()
+
       logger.lifecycle("Image $fullTag pushed successfully")
     }
   }
@@ -67,18 +89,17 @@ abstract class DockerPushTask : DefaultTask() {
   private fun resolveTags(imageName: String): List<String> {
     val result = mutableListOf<String>()
 
-    // 单 tag
+    // 单 image（你当前用的就是这个）
     image.orNull?.let { result.add(it) }
 
-    // 多 tag
-    tags.orNull?.let { list ->
-      list.flatMap { it.split(",") }
+    // 多 tag（可选）
+    tags.orNull?.forEach { raw ->
+      raw.split(",")
         .map { it.trim() }
         .filter { it.isNotBlank() }
         .forEach { tag ->
-          // docker-java push 需要完整 tag: image:tag
-          val fullTag = if (tag.contains(":")) tag else "$imageName:$tag"
-          result.add(fullTag)
+          val full = if (tag.contains(":")) tag else "$imageName:$tag"
+          result.add(full)
         }
     }
 

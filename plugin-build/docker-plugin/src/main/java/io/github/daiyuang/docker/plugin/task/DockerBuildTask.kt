@@ -42,7 +42,6 @@ abstract class DockerBuildTask : DefaultTask() {
     buildContext.convention(project.layout.projectDirectory.asFile.absolutePath)
     dockerfile.convention(project.layout.projectDirectory.file(DEFAULT_DOCKER_FILE).asFile.absolutePath)
     platform.convention(detectPlatform())
-    tags.convention(listOf(defaultTag(project.name)))
     noCache.convention(false)
     pull.convention(false)
     labels.convention(mapOf())
@@ -279,16 +278,30 @@ abstract class DockerBuildTask : DefaultTask() {
   private fun resolveTags(): Set<String> {
     val result = mutableSetOf<String>()
 
-    tag.orNull?.let { result.add(it) }
+    val hasExplicitTag =
+      tag.isPresent || (tags.isPresent && tags.get().isNotEmpty())
 
-    tags.orNull
-      ?.flatMap { it.split(",") }
-      ?.map { it.trim() }
-      ?.filter { it.isNotBlank() }
-      ?.let { result.addAll(it) }
+    if (tag.isPresent) {
+      result.add(tag.get())
+    }
+
+    if (tags.isPresent) {
+      result.addAll(
+        tags.get()
+          .flatMap { it.split(",") }
+          .map { it.trim() }
+          .filter { it.isNotBlank() }
+      )
+    }
+
+    // 只有在完全未指定 tag / tags 时，才使用默认 tag
+    if (!hasExplicitTag) {
+      result.add(defaultTag(project.name))
+    }
 
     return result
   }
+
 
   private fun defaultTag(projectName: String): String {
     val normalized = projectName.replaceFirst("-", "/")
@@ -301,7 +314,7 @@ abstract class DockerBuildTask : DefaultTask() {
     val id = cpu.processorIdentifier
 
     val arch = id.microarchitecture.lowercase()  // OSHI 7 推荐字段
-    val rawArch = System.getProperty("os.arch").lowercase()  // JVM 补充
+    val rawArch = SystemUtils.OS_ARCH  // JVM 补充
 
     return when {
       // ARM 64-bit

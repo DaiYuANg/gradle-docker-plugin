@@ -1,6 +1,7 @@
 package io.github.daiyuang.docker.plugin.service
 
 import com.github.dockerjava.api.DockerClient
+import com.github.dockerjava.api.model.AuthConfig
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
@@ -25,42 +26,40 @@ abstract class DockerService :
       _client ?: createClient().also { _client = it }
     }
 
+  /**
+   * 显式暴露 registry auth（给 push / pull 使用）
+   */
+  fun authConfig(): AuthConfig? {
+    val url = parameters.registryUrl.orNull ?: return null
+    val username = parameters.registryUsername.orNull ?: return null
+    val password = parameters.registryPassword.orNull ?: return null
+
+    return AuthConfig()
+      .withRegistryAddress(url)
+      .withUsername(username)
+      .withPassword(password)
+  }
+
   private fun createClient(): DockerClient {
-    val default = DefaultDockerClientConfig.createDefaultConfigBuilder()
+    val builder = DefaultDockerClientConfig.createDefaultConfigBuilder()
 
-    // 判断用户是否提供了任何 host/api/registry 配置
-    val empty = listOf(
-      parameters.host.orNull,
-      parameters.apiVersion.orNull,
-      parameters.registryUrl.orNull,
-      parameters.registryUsername.orNull,
-      parameters.registryPassword.orNull,
-      parameters.registryEmail.orNull
-    ).all { it == null }
+    parameters.host.orNull?.let { builder.withDockerHost(it) }
+    parameters.apiVersion.orNull?.let { builder.withApiVersion(it) }
 
-    val finalConfig: DockerClientConfig = if (empty) {
-      // 全部未配置 → 使用 docker-java 默认配置
-      default.build()
-    } else {
-      // patch 默认配置
-      parameters.host.orNull?.let { default.withDockerHost(it) }
-      parameters.apiVersion.orNull?.let { default.withApiVersion(it) }
+    // registry 仅用于 auth config 管理（不会决定 push 目标）
+    parameters.registryUrl.orNull?.let { builder.withRegistryUrl(it) }
+    parameters.registryUsername.orNull?.let { builder.withRegistryUsername(it) }
+    parameters.registryPassword.orNull?.let { builder.withRegistryPassword(it) }
+    parameters.registryEmail.orNull?.let { builder.withRegistryEmail(it) }
 
-      // registry 可选
-      parameters.registryUrl.orNull?.let { default.withRegistryUrl(it) }
-      parameters.registryUsername.orNull?.let { default.withRegistryUsername(it) }
-      parameters.registryPassword.orNull?.let { default.withRegistryPassword(it) }
-      parameters.registryEmail.orNull?.let { default.withRegistryEmail(it) }
-
-      default.build()
-    }
+    val config: DockerClientConfig = builder.build()
 
     val httpClient = ApacheDockerHttpClient.Builder()
-      .dockerHost(finalConfig.dockerHost)
-      .sslConfig(finalConfig.sslConfig)
+      .dockerHost(config.dockerHost)
+      .sslConfig(config.sslConfig)
       .build()
 
-    return DockerClientImpl.getInstance(finalConfig, httpClient)
+    return DockerClientImpl.getInstance(config, httpClient)
   }
 
   override fun close() {
@@ -71,7 +70,6 @@ abstract class DockerService :
     val host: Property<String>
     val apiVersion: Property<String>
 
-    // registry 配置（全部可选）
     val registryUrl: Property<String>
     val registryUsername: Property<String>
     val registryPassword: Property<String>
