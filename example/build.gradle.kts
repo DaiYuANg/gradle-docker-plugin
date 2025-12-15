@@ -5,15 +5,25 @@ plugins {
 }
 
 tasks.dockerBuild {
-  tags.set(listOf<String>("example:latest", "example:20251205"))
+  tags.set(listOf("example:latest", "example:20251205"))
   dockerfileDsl.set {
     from("redis:latest")
   }
 }
 
+dockerConfig{
+  registryUrl = "https://registry.hub.docker.com"
+  registryUsername = "daiyuang"
+  registryPassword = "password"
+}
+
 println(project.version)
 tasks.dockerRun {
   image = "redis:latest"
+}
+
+tasks.dockerPush{
+  image = "example:latest"
 }
 
 git {

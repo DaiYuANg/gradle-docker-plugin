@@ -30,6 +30,7 @@ abstract class DockerService :
    * 显式暴露 registry auth（给 push / pull 使用）
    */
   fun requireAuthConfig(): AuthConfig {
+    println(parameters)
     val registry = parameters.registryUrl.orNull
       ?: error("dockerConfig.registryUrl must be set")
 

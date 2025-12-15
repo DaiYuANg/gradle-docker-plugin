@@ -15,7 +15,7 @@ abstract class DockerPlugin : Plugin<Project> {
         run {
           spec.parameters.host.set(ext.dockerHost)
           spec.parameters.apiVersion.set(ext.apiVersion)
-          spec.parameters.registryUrl.set(ext.registryUrl.orNull)
+          spec.parameters.registryUrl.set(ext.registryUrl)
           spec.parameters.registryUsername.set(ext.registryUsername)
           spec.parameters.registryPassword.set(ext.registryPassword)
           spec.parameters.registryEmail.set(ext.registryEmail)
@@ -27,6 +27,20 @@ abstract class DockerPlugin : Plugin<Project> {
       project.tasks.register(def.name, def.type) { task ->
         task.group = DOCKER_TASK_GROUP
       }
+    }
+
+    project.afterEvaluate {
+      project.logger.lifecycle(
+        """
+    DockerExtension (afterEvaluate):
+      dockerHost=${ext.dockerHost.orNull}
+      apiVersion=${ext.apiVersion.orNull}
+      registryUrl=${ext.registryUrl.orNull}
+      registryUsername=${ext.registryUsername.orNull}
+      registryPassword=${ext.registryPassword.orNull}
+      registryEmail=${ext.registryEmail.orNull}
+    """.trimIndent()
+      )
     }
   }
 }
